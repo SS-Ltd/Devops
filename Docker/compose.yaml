@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  webserve:
+    image: nginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - ./creddit/:/var/www/creddit
+    networks:
+      - serverNetwork
+
+  exporter:
+    image: nginx/nginx-prometheus-exporter
+    ports:
+      - 9113:9113 # need to be removed
+    environment:
+      - NGINX_SCRAPE_URI="http://webserve:5001/status"
+    command: -nginx.scrape-uri=http://webserve:5001/status
+    networks:
+      - serverNetwork
+
+  prom:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - serverNetwork
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    networks:
+      - serverNetwork
+
+  backend:
+    image: moa234/creddit_backend
+    restart: always
+    networks:
+      - serverNetwork
+
+  APIDocs:
+    image: husseinelhawary/creddit_api
+    restart: always
+    networks:
+      - serverNetwork
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+    profiles: [cert]
+
+networks:
+  serverNetwork:
+    driver: bridge
