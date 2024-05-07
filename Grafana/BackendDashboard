@@ -318,8 +318,15 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "semi-dark-green",
-            "mode": "fixed"
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -328,11 +335,28 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 206
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -342,20 +366,17 @@
       },
       "id": 2,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
           "fields": "",
-          "values": false
+          "reducer": [
+            "sum"
+          ],
+          "show": true
         },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "showHeader": true,
+        "sortBy": []
       },
       "pluginVersion": "10.4.2",
       "targets": [
@@ -366,18 +387,20 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "api_request_total",
+          "exemplar": false,
+          "expr": "sum by(path) (api_request_total)",
+          "format": "table",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "instant": false,
+          "instant": true,
           "legendFormat": "{{path}}",
-          "range": true,
+          "range": false,
           "refId": "A",
           "useBackend": false
         }
       ],
       "title": "requests count per api",
-      "type": "stat"
+      "type": "table"
     }
   ],
   "schemaVersion": 39,
@@ -393,6 +416,6 @@
   "timezone": "browser",
   "title": "backend",
   "uid": "cdkxtn4nifabkd",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }
